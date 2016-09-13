@@ -1,0 +1,5 @@
+# snap-confine uses the secure_getenv GNU extension which isn't available in
+# musl libc
+CONFIG_DEVEL=y
+CONFIG_TOOLCHAINOPTS=y
+CONFIG_LIBC_USE_GLIBC=y

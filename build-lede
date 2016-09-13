@@ -1,0 +1,38 @@
+#!/bin/sh
+
+set -e -x
+
+# for Ubuntu 16.04
+#PACKAGES="git build-essential libssl-dev libncurses5-dev unzip gawk python subversion mercurial"
+PACKAGES="git build-essential libssl-dev libncurses5-dev unzip gawk python subversion golang"
+sudo apt -y install $PACKAGES
+
+build_dir=lede
+if ! [ -d $build_dir ]; then
+    git clone https://git.lede-project.org/source.git $build_dir
+fi
+cd $build_dir
+
+if ! grep -q '^config PERSISTENT_VAR' package/base-files/Makefile; then
+    wget https://people.canonical.com/~teknoraver/openwrt_persistent_var.patch
+    patch -p1 <openwrt_persistent_var.patch
+fi
+
+if ! grep '^src-git snap ' feeds.conf.default; then
+    cat >>feeds.conf.default <<EOF
+#src-git snap https://github.com/teknoraver/snap-openwrt
+src-git snap https://github.com/lool/snap-openwrt
+EOF
+fi
+
+./scripts/feeds update -a
+./scripts/feeds install -a
+
+if ! [ -r .config ]; then
+    cat ../lede-configs/common ../lede-configs/glibc ../lede-configs/rpi3 \
+        >.config
+    make defconfig
+fi
+
+make -j`grep -c '^processor\>' /proc/cpuinfo`
+
