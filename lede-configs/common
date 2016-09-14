@@ -5,4 +5,7 @@ CONFIG_PACKAGE_snapd=y
 # NB: this feature is patched-in
 CONFIG_PERSISTENT_VAR=y
 CONFIG_SQUASHFS_TOOLS_XZ_SUPPORT=y
+# set PATH
+CONFIG_INITOPT=y
+CONFIG_IMAGEOPT=y
 CONFIG_TARGET_INIT_PATH="/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
