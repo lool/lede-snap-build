@@ -29,7 +29,10 @@ fi
 ./scripts/feeds install -a
 
 if ! [ -r .config ]; then
-    cat ../lede-configs/common ../lede-configs/glibc ../lede-configs/rpi3 \
+    # glibc build
+    #cat ../lede-configs/common ../lede-configs/glibc ../lede-configs/luci ../lede-configs/rpi3 \
+    # default musl build
+    cat ../lede-configs/common ../lede-configs/luci ../lede-configs/rpi3 \
         >.config
     make defconfig
 fi
