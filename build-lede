@@ -7,9 +7,12 @@ set -e -x
 PACKAGES="git build-essential libssl-dev libncurses5-dev unzip gawk python subversion golang"
 sudo apt -y install $PACKAGES
 
-build_dir=lede
+repo=https://git.lede-project.org/source.git
+#repo=https://git.launchpad.net/~snappy-hwe-team/snappy-hwe-snaps/+git/openwrt
+build_dir=lede-glibc
+#build_dir=hwe-musl
 if ! [ -d $build_dir ]; then
-    git clone https://git.lede-project.org/source.git $build_dir
+    git clone $repo $build_dir
 fi
 cd $build_dir
 
@@ -29,11 +32,16 @@ fi
 ./scripts/feeds install -a
 
 if ! [ -r .config ]; then
-    # glibc build
-    #cat ../lede-configs/common ../lede-configs/glibc ../lede-configs/luci ../lede-configs/rpi3 \
-    # default musl build
-    cat ../lede-configs/common ../lede-configs/luci ../lede-configs/rpi3 \
-        >.config
+    configs="../lede-configs/common"
+    # glibc build (comment out for the default musl build)
+    configs="$configs ../lede-configs/glibc"
+    # luci web interface
+    configs="$configs ../lede-configs/luci"
+    # tcpdump
+    configs="$configs ../lede-configs/tcpdump"
+    # Raspberry Pi 3 B
+    configs="$configs ../lede-configs/rpi3"
+    cat $configs >.config
     make defconfig
 fi
 
